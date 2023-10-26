@@ -107,9 +107,7 @@ class SQLC {
     //2. 데이터 검색 ( name ), 있으면 출력, 없으면 전화번호부에 없습니다. 출력
     void searchInformation(String name) throws SQLException {
         //실행할 쿼리문
-        stm = con.prepareStatement("select * from phone where name = ?;");
-        //set으로 객체를 만들고 name 데이터 연결
-        stm.setString(1, name);
+        stm = con.prepareStatement("select name, rpad(substr(phoneNumber, 1, 4), 8, 'x') as phoneNumber, address FROM phone;");
         // rs의 자료형은 ResultSet
         rs = stm.executeQuery();
 
@@ -158,7 +156,7 @@ class SQLC {
     //4. 데이터 전체 출력
     void selectAll() throws SQLException {
         //실행할 쿼리문
-        stm = con.prepareStatement("SELECT * FROM phone;");
+        stm = con.prepareStatement("select name, rpad(substr(phoneNumber, 1, 4), 8, 'x') as phoneNumber, address FROM phone;");
         //쿼리문 반영
         ResultSet rs = stm.executeQuery();
 
