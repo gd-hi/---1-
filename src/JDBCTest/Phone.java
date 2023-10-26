@@ -68,23 +68,28 @@ class SQLC {
             stm = con.prepareStatement("INSERT INTO phone VALUE(?, ?, ?);"); // name, phoneNumber, address
             Scanner sc = new Scanner(System.in);
 
+            //데이터 set
             System.out.print("이름 입력 : ");
             phone_data.setName(sc.nextLine());
             System.out.print("전화 번호 입력 : ");
             phone_data.setPhoneNumber(sc.nextLine());
             System.out.print("주소 입력 : ");
             phone_data.setAddress(sc.nextLine());
-            //n번 째 인덱스 ?에 값 넣기
+            //n번 째 인덱스 ?에 값 get
             stm.setString(1, phone_data.getName()); //이름
             stm.setString(2, phone_data.getPhoneNumber()); //전화번호
             stm.setString(3, phone_data.getAddress()); //주소
 
+            //DDL 실행, 없으면 실행 결과 반영 안함
             stm.executeUpdate();
 
         }
+
+        // SQLIntegrityConstraintViolationException >> Primary key 예외 체크 (구글링 함)
         catch (SQLIntegrityConstraintViolationException e) {
             System.out.println("★★★★★이미 등록된 이름입니다.★★★★★");
         }
+
         catch (SQLException e) {
             e.printStackTrace();
         }
