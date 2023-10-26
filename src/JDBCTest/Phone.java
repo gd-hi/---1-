@@ -57,31 +57,46 @@ class SQLC {
     ResultSet rs;
     // JDBC 기초 작업 완료
 
-    //쿼리문으로 데이터 넣기
+
+
+    // < 전화번호부 프로그램>
+    //1. 데이터 입력
     void dataInsert(Phone_Data phone_data) {
         // 데이터를 쿼리문으로 넣기
         try {
             //실행 할 쿼리문을 prepareStatement 로 설정
-            stm = con.prepareStatement("INSERT INTO 전화번호부 VALUE(?, ?, ?);"); // name, phoneNumber, address
+            stm = con.prepareStatement("INSERT INTO phone VALUE(?, ?, ?);"); // name, phoneNumber, address
+            Scanner sc = new Scanner(System.in);
+
+            System.out.print("이름 입력 : ");
+            phone_data.setName(sc.nextLine());
+            System.out.print("전화 번호 입력 : ");
+            phone_data.setPhoneNumber(sc.nextLine());
+            System.out.print("주소 입력 : ");
+            phone_data.setAddress(sc.nextLine());
             //n번 째 인덱스 ?에 값 넣기
             stm.setString(1, phone_data.getName()); //이름
             stm.setString(2, phone_data.getPhoneNumber()); //전화번호
             stm.setString(3, phone_data.getAddress()); //주소
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            stm.executeUpdate();
+
+        }
+        catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("★★★★★이미 등록된 이름입니다.★★★★★");
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
 
-    // < 전화번호부 프로그램>
 
-    //1. 데이터 입력 -> DataInputClass
 
     //2. 데이터 검색 ( name ), 있으면 출력, 없으면 전화번호부에 없습니다. 출력
     void searchInformation(String name) throws SQLException {
         //실행할 쿼리문
-        stm = con.prepareStatement("select * from 전화번호부 where name = ?;");
+        stm = con.prepareStatement("select * from phone where name = ?;");
         //set으로 객체를 만들고 name 데이터 연결
         stm.setString(1, name);
 
@@ -89,7 +104,7 @@ class SQLC {
         rs = stm.executeQuery();
         // rs.next()를 이용해서 검색한 결과가 존재 하면, true / 존재하지 않으면 false
         if(rs.next() == false){
-            System.out.println("전화번호부에 없습니다.");
+            System.out.println("★★★★★전화번호부에 없습니다.★★★★★");
         }
 
     }
@@ -97,13 +112,13 @@ class SQLC {
     //3. 데이터 삭제 ( name ), 있으면 출력, 없으면 전화번호부에 없습니다. 출력
     void deleteInformation(String name) throws SQLException {
         //실행할 쿼리문
-        stm = con.prepareStatement("delete from 전화번호부 where name = ?;");
+        stm = con.prepareStatement("delete from phone where name = ?;");
         stm.setString(1, name);
 
         //executeUpdate -> 데이터가 잘 들어갔으면 1, 데이터가 들어가지 않았으면 0
         int result = stm.executeUpdate();
         if(result == 0){
-            System.out.println("전화번호부에 없습니다.");
+            System.out.println("★★★★★전화번호부에 없습니다.★★★★★");
         }
     }
 
@@ -114,14 +129,10 @@ class SQLC {
         return sc.next();
     }
 
-    void nameCheck(){
-
-    }
-
     //4. 데이터 전체 출력
     void selectAll() throws SQLException {
         //실행할 쿼리문
-        stm = con.prepareStatement("SELECT * FROM 전화번호부;");
+        stm = con.prepareStatement("SELECT * FROM phone;");
         //쿼리문 반영
         ResultSet rs = stm.executeQuery();
 
@@ -129,44 +140,25 @@ class SQLC {
         //true면 ResultSet 커서 위치의 처리 행이 있는 경우의 반환값
         //false면 ResultSet 커서 위치의 처리 행이 없는 경우의 반환값 - 종료, EOF(End Of File)
         while (rs.next()) {
+            System.out.println("======================================");
             System.out.print("이름 : ");
             System.out.println(rs.getString("name"));
             System.out.print("전화 번호 : ");
             System.out.println(rs.getString("phoneNumber"));
             System.out.print("주소 : ");
             System.out.println(rs.getString("address"));
-            System.out.println();
+            System.out.println("======================================");
         }
     }
 }
-
-//1. 데이터 입력
-class InputClass {
-    // 입력한 데이터 값 리턴
-    Phone_Data dataReturn() {
-        Phone_Data phone_data = new Phone_Data();
-
-        Scanner sc = new Scanner(System.in);
-
-        System.out.print("이름 입력 : ");
-        phone_data.setName(sc.nextLine());
-        System.out.print("전화 번호 입력 : ");
-        phone_data.setPhoneNumber(sc.nextLine());
-        System.out.print("주소 입력 : ");
-        phone_data.setAddress(sc.nextLine());
-
-        return phone_data;
-    }
-}
-
 
 public class Phone {
     public static void main(String[] args) throws SQLException {
         Scanner sc = new Scanner(System.in);
 
-        SQLC sq = new SQLC();
+        Phone_Data phone_data = new Phone_Data();
 
-        InputClass ic = new InputClass();
+        SQLC sq = new SQLC();
 
         while (true) {
             System.out.println("<전화번호부 프로그램>");
@@ -175,7 +167,7 @@ public class Phone {
 
             //1. 입력
             if (num == 1) {
-                sq.dataInsert(ic.dataReturn());
+                sq.dataInsert(phone_data);
                 sq.selectAll();
             }
             //2. 검색
