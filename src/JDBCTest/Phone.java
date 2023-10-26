@@ -150,7 +150,7 @@ class InputClass {
 
         System.out.print("이름 입력 : ");
         phone_data.setName(sc.nextLine());
-        System.out.print("전화번호 입력 : ");
+        System.out.print("전화 번호 입력 : ");
         phone_data.setPhoneNumber(sc.nextLine());
         System.out.print("주소 입력 : ");
         phone_data.setAddress(sc.nextLine());
@@ -176,6 +176,7 @@ public class Phone {
             //1. 입력
             if (num == 1) {
                 sq.dataInsert(ic.dataReturn());
+                sq.selectAll();
             }
             //2. 검색
             else if (num == 2) {
