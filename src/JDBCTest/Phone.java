@@ -109,18 +109,21 @@ class SQLC {
     //2. 데이터 검색 ( name ), 있으면 출력, 없으면 전화번호부에 없습니다. 출력
     void searchInformation(String name) throws SQLException {
         //실행할 쿼리문
-        stm = con.prepareStatement("select name, rpad(substr(phoneNumber, 1, 4), 8, 'x') as phoneNumber, address FROM phone;");
+        stm = con.prepareStatement("select name, rpad(substr(phoneNumber, 1, 4), 8, 'x') as phoneNumber, address FROM phone where name = ?;");
+        //name이 null이면 rs.next() -> false
+        stm.setString(1, name);
         // rs의 자료형은 ResultSet
         rs = stm.executeQuery();
 
         // rs.next()를 이용해서 true면 ResultSet 커서 위치의 처리 행이 있는 경우의 반환값 / 존재 하지 않으면 false
+        // rs.next
         if(rs.next()) {
             while (true) {
                 System.out.println("======================================");
                 System.out.print("이름 : ");
-                System.out.println(rs.getString("name"));
+                System.out.print(rs.getString("name")+ " / ");
                 System.out.print("전화 번호 : ");
-                System.out.println(rs.getString("phoneNumber"));
+                System.out.print(rs.getString("phoneNumber")+ " / ");
                 System.out.print("주소 : ");
                 System.out.println(rs.getString("address"));
                 System.out.println("======================================");
@@ -168,9 +171,9 @@ class SQLC {
         while (rs.next()) {
             System.out.println("======================================");
             System.out.print("이름 : ");
-            System.out.println(rs.getString("name"));
+            System.out.print(rs.getString("name")+ " / ");
             System.out.print("전화 번호 : ");
-            System.out.println(rs.getString("phoneNumber"));
+            System.out.print(rs.getString("phoneNumber")+ " / ");
             System.out.print("주소 : ");
             System.out.println(rs.getString("address"));
             System.out.println("======================================");
