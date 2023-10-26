@@ -23,21 +23,27 @@ import java.util.Scanner;
 //데이터
 class Phone_Data {
     String name, phoneNumber, address;
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
+
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
     public String getAddress() {
         return address;
     }
+
     public void setAddress(String address) {
         this.address = address;
     }
@@ -47,16 +53,17 @@ class SQLC {
 
     //2. 데이터 베이스와 자바 연결 ( Connection )
     private static Connection con;
+
     //1. DB 드라이버 연결
     SQLC() throws SQLException {
         con = DriverManager.getConnection("jdbc:mysql://localhost:3306/phone", "root", "1234");
     }
+
     //3. 쿼리문 실행 ( Statement )
     private static PreparedStatement stm;
     //4. 결과값 반영 ( ResultSet )
     ResultSet rs;
     // JDBC 기초 작업 완료
-
 
 
     // < 전화번호부 프로그램>
@@ -80,22 +87,21 @@ class SQLC {
             stm.setString(2, phone_data.getPhoneNumber()); //전화번호
             stm.setString(3, phone_data.getAddress()); //주소
 
-            //DDL 실행, 없으면 실행 결과 반영 안함
-            stm.executeUpdate();
-
+            //executeUpdate -> DDL 실행, 없으면 실행 결과 반영 안함
+            int num = stm.executeUpdate();
+            //num 라는 변수에 SQL문의 영향을 받는 행 수를 반환 받아 메세지 출력
+            if (num != 0) {
+                System.out.println("★★★★★데이터 등록 완료★★★★★");
+            }
         }
 
         // SQLIntegrityConstraintViolationException >> Primary key 예외 체크 (구글링 함)
         catch (SQLIntegrityConstraintViolationException e) {
             System.out.println("★★★★★이미 등록된 이름입니다.★★★★★");
-        }
-
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
-
 
 
     //2. 데이터 검색 ( name ), 있으면 출력, 없으면 전화번호부에 없습니다. 출력
@@ -104,11 +110,26 @@ class SQLC {
         stm = con.prepareStatement("select * from phone where name = ?;");
         //set으로 객체를 만들고 name 데이터 연결
         stm.setString(1, name);
-
-        // rs의 자료형은 ResultSet 이다.
+        // rs의 자료형은 ResultSet
         rs = stm.executeQuery();
-        // rs.next()를 이용해서 검색한 결과가 존재 하면, true / 존재하지 않으면 false
-        if(rs.next() == false){
+
+        boolean check = true;
+
+        // rs.next()를 이용해서 true면 ResultSet 커서 위치의 처리 행이 있는 경우의 반환값 / 존재 하지 않으면 false
+        if(rs.next()) {
+            while (true) {
+                System.out.println("======================================");
+                System.out.print("이름 : ");
+                System.out.println(rs.getString("name"));
+                System.out.print("전화 번호 : ");
+                System.out.println(rs.getString("phoneNumber"));
+                System.out.print("주소 : ");
+                System.out.println(rs.getString("address"));
+                System.out.println("======================================");
+                break;
+            }
+        }
+        else{
             System.out.println("★★★★★전화번호부에 없습니다.★★★★★");
         }
 
@@ -122,8 +143,10 @@ class SQLC {
 
         //executeUpdate -> 데이터가 잘 들어갔으면 1, 데이터가 들어가지 않았으면 0
         int result = stm.executeUpdate();
-        if(result == 0){
+        if (result == 0) {
             System.out.println("★★★★★전화번호부에 없습니다.★★★★★");
+        } else {
+            System.out.println("★★★★★데이터 삭제 완료★★★★★");
         }
     }
 
@@ -153,9 +176,11 @@ class SQLC {
             System.out.print("주소 : ");
             System.out.println(rs.getString("address"));
             System.out.println("======================================");
+
         }
     }
 }
+
 
 public class Phone {
     public static void main(String[] args) throws SQLException {
@@ -178,18 +203,19 @@ public class Phone {
             //2. 검색
             else if (num == 2) {
                 sq.searchInformation(sq.findInformation());
-                //검색된 데이터 출력
-                sq.selectAll();
             }
             //3. 삭제
             else if (num == 3) {
                 sq.deleteInformation(sq.findInformation());
-                //삭제된 데이터 출력
+                System.out.println("--------현재 데이터--------");
                 sq.selectAll();
+                System.out.println("-------------------------");
             }
             //4. 출력
             else if (num == 4) {
+                System.out.println("--------현재 데이터--------");
                 sq.selectAll();
+                System.out.println("-------------------------");
             }
             //5. 종료
             else {
