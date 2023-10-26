@@ -113,8 +113,6 @@ class SQLC {
         // rs의 자료형은 ResultSet
         rs = stm.executeQuery();
 
-        boolean check = true;
-
         // rs.next()를 이용해서 true면 ResultSet 커서 위치의 처리 행이 있는 경우의 반환값 / 존재 하지 않으면 false
         if(rs.next()) {
             while (true) {
