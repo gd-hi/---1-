@@ -1,5 +1,7 @@
 package JDBCTest;
 
+// 010-xxxx 출력 해결
+
 /*
 //기초작업
 1. 데이터 베이스 드라이버 연결 ( DriverManager.getConnection("jdbc:mysql://DB로컬호스트/스키마"
